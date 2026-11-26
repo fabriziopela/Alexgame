@@ -44,6 +44,8 @@ Alex è un minatore armato di piccone. Deve attraversare 10 livelli tra foreste,
 
 I livelli completati restano sbloccati sul dispositivo, insieme a miglior tempo e punteggio.
 
+> **Nota per i tester su iPhone:** se l'interruttore laterale "silenzioso" è attivo, il gioco non emette suoni (comportamento standard di Safari).
+
 ---
 
 ## Pubblicazione (GitHub Pages)

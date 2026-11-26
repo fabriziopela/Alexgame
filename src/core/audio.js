@@ -43,7 +43,8 @@ export class GameAudio {
         const d = this.noise.getChannelData(0);
         for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
       }
-      if (this.ctx.state === 'suspended') this.ctx.resume();
+      // iOS può lasciare il contesto 'interrupted' dopo una telefonata: riprendi se non è attivo
+      if (this.ctx.state !== 'running') this.ctx.resume();
     } catch { this.ctx = null; }
   }
 
@@ -53,7 +54,7 @@ export class GameAudio {
   }
 
   suspend() { try { this.ctx && this.ctx.suspend(); } catch { /* */ } }
-  resume() { try { this.ctx && this.ctx.resume(); } catch { /* */ } }
+  resume() { try { if (this.ctx && this.ctx.state !== 'running') this.ctx.resume(); } catch { /* */ } }
 
   tone(freq, dur, { type = 'square', vol = 0.3, slide = 0, delay = 0, bus } = {}) {
     const c = this.ctx; if (!c) return;
