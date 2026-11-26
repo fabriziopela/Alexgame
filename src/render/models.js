@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
+BOX.userData.shared = true;
 
 class Kit {
   constructor() { this.mats = new Map(); this.list = []; }

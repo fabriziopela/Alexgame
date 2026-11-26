@@ -5,6 +5,7 @@ import { T, TILE_INFO } from '../world/tiles.js';
 import { TILE_FACES, atlasCell, ATLAS_COLS, ATLAS_ROWS, A, tileTexture } from './textures.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
+BOX.userData.shared = true;
 const tmpM = new THREE.Matrix4();
 const tmpC = new THREE.Color();
 
@@ -39,6 +40,7 @@ export function cubesMesh(cubes, material) {
     mesh.setColorAt(i, tmpC.set(c.color ?? '#ffffff'));
   });
   mesh.geometry = BOX.clone();
+  mesh.geometry.userData = {}; // la copia appartiene a questa mesh: va liberata con essa
   mesh.geometry.setAttribute('aFaces', new THREE.InstancedBufferAttribute(faces, 4));
   if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   mesh.frustumCulled = false;
@@ -81,9 +83,11 @@ export class BlockLayer {
     scene.add(this.group);
     this.material = makeAtlasMaterial(atlas);
     this.lavaTex = tileTexture(A.LAVA, 1, 1);
+    this.lavaTex.userData.shared = true;
     this.lavaMat = new THREE.MeshBasicMaterial({ map: this.lavaTex, color: '#ffffff' });
     this.spikeMat = new THREE.MeshLambertMaterial({ color: '#c9ced8', emissive: '#2a2d34' });
     this.spikeGeo = spikeGeometry();
+    this.spikeGeo.userData.shared = true;
     this.crackMat = new THREE.MeshBasicMaterial({ map: tileTexture(A.CRACK2), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     this.crackMesh = new THREE.InstancedMesh(BOX, this.crackMat, 48);
     this.crackMesh.count = 0;
@@ -93,10 +97,18 @@ export class BlockLayer {
     this.retract = null;
   }
 
+  /** Rimuove una mesh e libera le risorse GPU non condivise. */
+  drop(m) {
+    if (!m) return;
+    this.group.remove(m);
+    if (m.isInstancedMesh) m.dispose();
+    if (!m.geometry.userData.shared) m.geometry.dispose();
+  }
+
   clear() {
-    for (const c of this.chunks) for (const m of Object.values(c)) if (m && m.isObject3D) { this.group.remove(m); m.geometry.dispose(); }
-    if (this.retract) { this.group.remove(this.retract); this.retract = null; }
-    if (this.backMesh) { this.group.remove(this.backMesh); this.backMesh.geometry.dispose(); this.backMesh = null; }
+    for (const c of this.chunks) for (const m of Object.values(c)) if (m && m.isObject3D) this.drop(m);
+    if (this.retract) { this.drop(this.retract); this.retract.material.dispose(); this.retract = null; }
+    if (this.backMesh) { this.drop(this.backMesh); this.backMesh = null; }
     this.chunks = [];
   }
 
@@ -137,7 +149,7 @@ export class BlockLayer {
     const cg = this.level.colGround;
     const nearestGround = (x, d) => { for (let k = x + d; k >= 0 && k < grid.w; k += d) if (cg[k] >= 0 && grid.isSolid(k, 0)) return cg[k]; return 0; };
     for (let x = 0; x < grid.w; x++) {
-      for (let y = -3; y < 0; y++) cubes.push({ x: x + 0.5, y: y + 0.5, z: 0, side: A.DARKSTONE, color: deepCol });
+      for (let y = -6; y < 0; y++) cubes.push({ x: x + 0.5, y: y + 0.5, z: 0, side: A.DARKSTONE, color: deepCol });
       if (!cg || grid.isSolid(x, 0)) continue;
       const ref = Math.min(nearestGround(x, -1), nearestGround(x, 1));
       for (let y = 0; y < ref - 1; y++) {
@@ -164,7 +176,7 @@ export class BlockLayer {
   buildChunk(i) {
     const grid = this.level.grid;
     const c = this.chunks[i];
-    for (const k of ['solid', 'lava', 'spikes']) if (c[k]) { this.group.remove(c[k]); c[k].geometry.dispose(); c[k] = null; }
+    for (const k of ['solid', 'lava', 'spikes']) if (c[k]) { this.drop(c[k]); c[k] = null; }
     const x0 = i * CHUNK, x1 = Math.min(grid.w, x0 + CHUNK);
     const solids = [], lava = [], spikes = [];
     const tint = '#' + this.tint.getHexString();

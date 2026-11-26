@@ -8,6 +8,21 @@ import { Particles } from './particles.js';
 import { createRng } from '../core/rng.js';
 import { T } from '../world/tiles.js';
 
+/** Libera geometrie, materiali e texture di un sottoalbero, saltando le risorse condivise. */
+export function disposeTree(root) {
+  root.traverse((n) => {
+    if (n.isInstancedMesh) n.dispose();
+    if (n.geometry && !n.isSprite && !n.geometry.userData.shared) n.geometry.dispose();
+    if (n.material) {
+      for (const m of [].concat(n.material)) {
+        if (m.userData.shared) continue;
+        if (m.map && !m.map.userData.shared) m.map.dispose();
+        m.dispose();
+      }
+    }
+  });
+}
+
 const TILE_COLORS = {
   [T.GRASS]: ['#5fb043', '#8a5a35'], [T.DIRT]: ['#8a5a35', '#6e4528'], [T.SAND]: ['#e8cf8c', '#cfb26e'],
   [T.SANDSTONE]: ['#d6b06a', '#b38a4c'], [T.STONE]: ['#868c96', '#5d626b'], [T.WOOD]: ['#b07a3e', '#7d5229'],
@@ -21,7 +36,7 @@ function glowTexture() {
   const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(0.35, 'rgba(255,255,255,0.45)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
   g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.userData.shared = true; return t;
 }
 
 function shadowTexture() {
@@ -30,7 +45,9 @@ function shadowTexture() {
   const grd = g.createRadialGradient(16, 16, 0, 16, 16, 16);
   grd.addColorStop(0, 'rgba(0,0,0,0.55)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = grd; g.fillRect(0, 0, 32, 32);
-  return new THREE.CanvasTexture(c);
+  const t = new THREE.CanvasTexture(c);
+  t.userData.shared = true;
+  return t;
 }
 
 export class Renderer {
@@ -44,7 +61,9 @@ export class Renderer {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 16 / 9, 0.5, 140);
     this.atlas = buildAtlas();
+    this.atlas.userData.shared = true;
     this.atlasMat = makeAtlasMaterial(this.atlas);
+    this.atlasMat.userData.shared = true;
     this.blocks = new BlockLayer(this.scene, this.atlas);
     this.particles = new Particles(this.scene);
     this.glowTex = glowTexture();
@@ -75,8 +94,9 @@ export class Renderer {
   clearLevel() {
     for (const o of [...this.levelGroup.children]) {
       this.levelGroup.remove(o);
-      o.traverse((n) => { if (n.isMesh && n.geometry && n.geometry !== this._shared) n.geometry.dispose?.(); });
+      disposeTree(o);
     }
+    if (this.scene.background && this.scene.background.isTexture) { this.scene.background.dispose(); this.scene.background = null; }
     this.particles.clear();
   }
 
@@ -304,7 +324,7 @@ export class Renderer {
   }
 
   refreshBonusGlows() {
-    for (const s of this.bonusGlows) this.levelGroup.remove(s);
+    for (const s of this.bonusGlows) { this.levelGroup.remove(s); disposeTree(s); }
     this.bonusGlows = [];
     for (const key of this.session.level.bonusLoot.keys()) {
       const [x, y] = key.split(',').map(Number);
@@ -401,7 +421,7 @@ export class Renderer {
       v.group.position.set(pk.body.x, pk.body.y, 0.2);
       v.animate(pk, dt);
     }
-    for (const [pk, v] of this.pickupViews) if (!seen.has(pk)) { this.levelGroup.remove(v.group); this.pickupViews.delete(pk); }
+    for (const [pk, v] of this.pickupViews) if (!seen.has(pk)) { this.levelGroup.remove(v.group); disposeTree(v.group); this.pickupViews.delete(pk); }
     // piccone lanciato
     if (s.boomerang) {
       this.thrown.group.visible = true;

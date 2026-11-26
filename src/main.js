@@ -67,6 +67,7 @@ class App {
       else this.audio.resume();
     });
     const portrait = window.matchMedia('(orientation: portrait) and (pointer: coarse)');
+    this.portrait = portrait;
     const onOrient = () => { if (portrait.matches && this.state === 'playing') this.pause(); setTimeout(() => this.renderer.resize(), 120); };
     portrait.addEventListener?.('change', onOrient);
     window.addEventListener('orientationchange', onOrient);
@@ -148,6 +149,8 @@ class App {
     this.input.reset();
     this.acc = 0;
     this.audio.music(THEMES[this.session.recipe.theme].music);
+    // se nel frattempo il telefono è in verticale o l'app è in background, parte già in pausa
+    if (document.hidden || this.portrait?.matches) this.pause();
   }
 
   pause() {
