@@ -1,6 +1,6 @@
-# Minatore — Documento di progetto (prototipo beta)
+# Alex the Miner — Documento di progetto (prototipo beta)
 
-Data: 2026-11-26 · Stato: in approvazione
+Data: 2026-11-26 · Stato: approvato
 
 ## 1. Intento
 
@@ -10,7 +10,7 @@ presentare il concept (potenziali clienti/investitori, tester) e a raccogliere
 feedback su gameplay e difficoltà. Deve quindi essere stabile, fluido, leggibile e
 completo in tutte le sue schermate, non solo "funzionante".
 
-Titolo provvisorio: **Minatore** (modificabile in un punto solo, `src/config.js`).
+Titolo: **Alex the Miner** (modificabile in un punto solo, `src/config.js`).
 
 ## 2. Obiettivi, non-obiettivi, anti-obiettivi
 
