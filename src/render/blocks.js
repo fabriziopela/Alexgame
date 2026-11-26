@@ -134,11 +134,13 @@ export class BlockLayer {
     // pareti scure in fondo alle buche (abisso), per non mostrare il cielo
     const deep = new THREE.Color(col).multiplyScalar(0.35);
     const deepCol = '#' + deep.getHexString();
+    const cg = this.level.colGround;
+    const nearestGround = (x, d) => { for (let k = x + d; k >= 0 && k < grid.w; k += d) if (cg[k] >= 0 && grid.isSolid(k, 0)) return cg[k]; return 0; };
     for (let x = 0; x < grid.w; x++) {
-      if (!this.level.colGround || this.level.colGround[x] >= 0 && grid.isSolid(x, 0)) continue;
-      let ref = 0;
-      for (let k = 1; k < 8; k++) ref = Math.max(ref, this.level.colGround[x - k] ?? 0, this.level.colGround[x + k] ?? 0);
-      for (let y = 0; y < Math.max(1, ref - 1); y++) {
+      for (let y = -3; y < 0; y++) cubes.push({ x: x + 0.5, y: y + 0.5, z: 0, side: A.DARKSTONE, color: deepCol });
+      if (!cg || grid.isSolid(x, 0)) continue;
+      const ref = Math.min(nearestGround(x, -1), nearestGround(x, 1));
+      for (let y = 0; y < ref - 1; y++) {
         if (grid.get(x, y) === T.LAVA) continue;
         cubes.push({ x: x + 0.5, y: y + 0.5, z: -1, side: A.DARKSTONE, color: deepCol });
       }

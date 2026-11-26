@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Alex the Miner</title>
+  <meta name="description" content="Alex the Miner — platform 3D a blocchi per smartphone. Prototipo beta.">
+  <meta name="theme-color" content="#1b1410">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Alex Miner">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+</head>
+<body>
+  <canvas id="game" aria-label="Area di gioco"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div id="hearts" aria-label="Cuori"></div>
+      <div id="power" class="hidden"><span id="power-icon"></span><div class="power-bar"><i id="power-fill"></i></div></div>
+    </div>
+    <div class="hud-center">
+      <div id="timer">2:00</div>
+      <div id="progress"><i id="progress-fill"></i><b id="progress-head"></b></div>
+    </div>
+    <div class="hud-right">
+      <div id="score">0</div>
+      <button id="btn-pause" class="icon-btn" aria-label="Pausa">❚❚</button>
+    </div>
+  </div>
+
+  <!-- Comandi touch: il livello trasparente riceve i tocchi, i pulsanti sono solo grafica -->
+  <div id="touch-layer" class="hidden"></div>
+  <div id="controls" class="hidden" aria-hidden="true">
+    <div class="pad-left">
+      <div class="tbtn" id="tb-left"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8"/></svg></div>
+      <div class="tbtn" id="tb-right"><svg viewBox="0 0 24 24"><path d="m9 4 8 8-8 8"/></svg></div>
+    </div>
+    <div class="pad-right">
+      <div class="tbtn act" id="tb-hit"><span class="ico">⛏</span><small>COLPISCI</small></div>
+      <div class="tbtn act big" id="tb-jump"><svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/></svg><small>SALTA</small></div>
+    </div>
+  </div>
+
+  <!-- Schermate -->
+  <section id="screen-loading" class="screen show">
+    <div class="logo small">ALEX <em>the</em> MINER</div>
+    <div class="loader"><i></i></div>
+    <p class="muted">Caricamento…</p>
+  </section>
+
+  <section id="screen-title" class="screen">
+    <div class="title-wrap">
+      <div class="logo">ALEX <em>the</em> MINER</div>
+      <p class="tagline">Scava, salta e sopravvivi a 10 livelli tra foreste, deserti e miniere.</p>
+      <button class="btn primary" id="btn-play">GIOCA</button>
+      <div class="row">
+        <button class="btn" id="btn-levels">LIVELLI</button>
+        <button class="btn" id="btn-audio-title">AUDIO: ON</button>
+      </div>
+      <p class="version muted" id="version"></p>
+    </div>
+    <div id="ios-hint" class="hint hidden">Per giocare a schermo intero: tocca <b>Condividi</b> e poi <b>Aggiungi alla schermata Home</b>.</div>
+  </section>
+
+  <section id="screen-levels" class="screen">
+    <div class="panel wide">
+      <div class="panel-head"><button class="icon-btn" id="btn-levels-back" aria-label="Indietro">‹</button><h2>Scegli il livello</h2><span></span></div>
+      <div id="level-grid"></div>
+    </div>
+  </section>
+
+  <section id="screen-intro" class="screen">
+    <div class="intro">
+      <div class="intro-num" id="intro-num">LIVELLO 1</div>
+      <div class="intro-name" id="intro-name"></div>
+      <p class="intro-hint" id="intro-hint"></p>
+      <p class="muted blink">Tocca per iniziare</p>
+    </div>
+  </section>
+
+  <section id="screen-pause" class="screen dim">
+    <div class="panel">
+      <h2>Pausa</h2>
+      <button class="btn primary" id="btn-resume">RIPRENDI</button>
+      <button class="btn" id="btn-restart">RICOMINCIA</button>
+      <button class="btn" id="btn-pause-levels">LIVELLI</button>
+      <button class="btn" id="btn-audio-pause">AUDIO: ON</button>
+    </div>
+  </section>
+
+  <section id="screen-result" class="screen dim">
+    <div class="panel">
+      <h2 id="result-title">Livello completato!</h2>
+      <div id="result-badge" class="badge hidden">NUOVO RECORD</div>
+      <div class="stats" id="result-stats"></div>
+      <div class="row">
+        <button class="btn primary" id="btn-next">AVANTI</button>
+        <button class="btn" id="btn-retry">RIPROVA</button>
+        <button class="btn" id="btn-result-levels">LIVELLI</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="rotate" class="overlay">
+    <div class="phone"></div>
+    <p>Ruota il telefono in orizzontale per giocare</p>
+  </div>
+
+  <noscript><div class="overlay show">Per giocare serve JavaScript attivo.</div></noscript>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
