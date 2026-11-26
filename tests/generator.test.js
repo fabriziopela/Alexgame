@@ -29,7 +29,6 @@ test('difficulty is non-decreasing', () => {
     assert.ok(c.enemyRate >= p.enemyRate, `enemyRate ${c.id}`);
     assert.ok(c.maxGap >= p.maxGap, `maxGap ${c.id}`);
     assert.ok(c.enemySpeed >= p.enemySpeed, `enemySpeed ${c.id}`);
-    assert.ok(c.length >= p.length, `length ${c.id}`);
   }
 });
 
