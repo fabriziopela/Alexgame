@@ -241,8 +241,11 @@ async function boot() {
   }
 }
 
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
-}
+// Funzionamento offline. In contesti che non lo permettono (iframe protetti) si prosegue senza.
+try {
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => { try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch { /* non disponibile */ } });
+  }
+} catch { /* non disponibile */ }
 
 boot();
