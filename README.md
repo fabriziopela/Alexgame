@@ -120,6 +120,16 @@ Il generatore scarta da solo i percorsi impossibili e rigenera il livello. Il te
 
 I valori di fisica e regole (velocità, salto, durata dei potenziamenti, timer) sono in `src/config.js`, insieme al titolo del gioco.
 
+## Pubblicare un aggiornamento per i tester
+
+Il gioco funziona offline, quindi i telefoni conservano una copia della versione precedente. A ogni rilascio:
+
+1. aumentare `GAME_VERSION` in `src/config.js` (es. `0.9.1-beta`);
+2. scrivere lo stesso valore in `CACHE` all'inizio di `sw.js` (`alex-the-miner-0.9.1-beta`);
+3. eseguire `npm test`: un test segnala se i due valori non coincidono o se manca un file nella lista della cache.
+
+I tester ricevono la nuova versione alla seconda apertura del gioco. La versione in uso è indicata nella schermata iniziale.
+
 ## Struttura del codice
 
 ```

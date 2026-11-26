@@ -1,5 +1,7 @@
-// Service worker: funzionamento offline (cache-first). Aggiornare CACHE a ogni rilascio.
-const CACHE = 'alex-the-miner-v0.9.0';
+// Service worker: funzionamento offline (cache-first).
+// A ogni rilascio aggiornare GAME_VERSION in src/config.js e qui sotto (un test verifica che coincidano):
+// il cambio di questo file fa scaricare la nuova versione ai tester.
+const CACHE = 'alex-the-miner-0.9.0-beta';
 const FILES = [
   './',
   './index.html',
@@ -40,7 +42,10 @@ const FILES = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
+  // cache: 'reload' evita che la cache HTTP del server (es. GitHub Pages) fornisca file vecchi
+  e.waitUntil(caches.open(CACHE)
+    .then((c) => c.addAll(FILES.map((f) => new Request(f, { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {

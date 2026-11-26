@@ -22,3 +22,16 @@ test('manifest is landscape fullscreen with icons that exist', () => {
   assert.equal(m.display, 'fullscreen');
   for (const i of m.icons) assert.ok(existsSync(join(root, i.src)), i.src);
 });
+
+test('service worker cache name follows GAME_VERSION', async () => {
+  const { GAME_VERSION } = await import('../src/config.js');
+  const sw = readFileSync(join(root, 'sw.js'), 'utf8');
+  const m = sw.match(/const CACHE = '([^']+)'/);
+  assert.ok(m, 'CACHE constant not found');
+  assert.ok(m[1].endsWith(GAME_VERSION), `CACHE ${m[1]} does not match GAME_VERSION ${GAME_VERSION}`);
+});
+
+test('service worker install bypasses the HTTP cache', () => {
+  const sw = readFileSync(join(root, 'sw.js'), 'utf8');
+  assert.match(sw, /cache: 'reload'/);
+});
