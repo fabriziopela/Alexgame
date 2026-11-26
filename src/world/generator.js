@@ -3,6 +3,7 @@ import { Grid } from './grid.js';
 import { T } from './tiles.js';
 import { createRng } from '../core/rng.js';
 import { SEGMENTS, MATERIALS, GRID_H, writeColumn } from './segments.js';
+import { validateLevel } from './validator.js';
 
 const START_COLS = 12;
 const END_COLS = 10;
@@ -56,10 +57,10 @@ function buildOnce(recipe, seed) {
 }
 
 /**
- * Genera il livello. `validate` (opzionale) riceve il livello e ritorna {ok}.
+ * Genera il livello e ne verifica la completabilità (`validate`, default validateLevel).
  * In caso di esito negativo si riprova con seme+1 (max 20 tentativi).
  */
-export function generateLevel(recipe, { validate } = {}) {
+export function generateLevel(recipe, { validate = validateLevel } = {}) {
   for (let i = 0; i < 20; i++) {
     const level = buildOnce(recipe, recipe.seed + i);
     level.seedUsed = recipe.seed + i;

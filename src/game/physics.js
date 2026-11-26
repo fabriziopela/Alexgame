@@ -4,6 +4,7 @@ import { PHYS } from '../config.js';
 const EPS = 1e-6;
 const MAX_DT = 1 / 20;
 const MAX_SUBSTEP = 0.25;
+export const SPIKE_H = 0.55;
 
 export function makeBody(x, y, w, h) {
   return { x, y, w, h, vx: 0, vy: 0, onGround: false, hitWall: 0, hitCeil: false, gravity: 1 };
@@ -72,7 +73,8 @@ export function overlapsHazard(b, grid, shrink = 0.12) {
     for (let tx = Math.floor(x0); tx <= Math.floor(x1); tx++) {
       const h = grid.hazardAt(tx, ty);
       if (h === 'lava') return 'lava';
-      if (h) found = h;
+      // gli spuntoni occupano solo la metà inferiore del blocco
+      if (h === 'spikes' && b.y < ty + SPIKE_H) found = h;
     }
   return found;
 }
