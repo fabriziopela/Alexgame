@@ -2,6 +2,7 @@
 import { PHYS, RULES } from '../config.js';
 import { makeBody, moveBody, aabbOverlap } from './physics.js';
 
+const NO_INPUT = Object.freeze({ left: false, right: false, jump: false, jumpPressed: false, hit: false, hitPressed: false });
 const approach = (v, target, delta) => (v < target ? Math.min(v + delta, target) : Math.max(v - delta, target));
 
 export class Player {
@@ -20,11 +21,14 @@ export class Player {
     this.lastSafe = { x, y };
     this.state = 'idle';
     this.hurtTime = 0;
+    this.inputLock = 0;
     this.alive = true;
   }
 
   update(dt, input, session) {
     const b = this.body;
+    // Dopo una ricomparsa i comandi restano bloccati per un attimo.
+    if (this.inputLock > 0) { this.inputLock = Math.max(0, this.inputLock - dt); input = NO_INPUT; }
     this.invuln = Math.max(0, this.invuln - dt);
     this.star = Math.max(0, this.star - dt);
     this.boomerang = Math.max(0, this.boomerang - dt);
@@ -110,8 +114,9 @@ export class Player {
   }
 
   /** Subisce danno; ritorna true se ha perso un cuore. */
-  hurt(session, fromX, knock = true) {
-    if (this.invuln > 0 || this.star > 0) return false;
+  hurt(session, fromX, knock = true, force = false) {
+    if (this.star > 0) return false;
+    if (this.invuln > 0 && !force) return false;
     this.hearts = Math.max(0, this.hearts - 1);
     this.invuln = RULES.HURT_INVULN;
     if (knock) {
