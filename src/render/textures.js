@@ -12,6 +12,7 @@ export const A = {
   GRASS_TOP: 0, GRASS_SIDE: 1, DIRT: 2, SAND: 3, SANDSTONE_SIDE: 4, SANDSTONE_TOP: 5, STONE: 6, DARKSTONE: 7,
   WOOD_SIDE: 8, WOOD_TOP: 9, LEAVES: 10, CRATE: 11, BONUS: 12, BEDROCK: 13, BRICK: 14, LAVA: 15,
   CRACK1: 16, CRACK2: 17, MINE_WALL: 18, TOMB_WALL: 19, CACTUS: 20, PLANK: 21, ORE_WALL: 22, STONE_TOP: 23,
+  PLATFORM: 24,
 };
 
 /** [lato, sopra] per ogni tipo di blocco. */
@@ -28,6 +29,7 @@ export const TILE_FACES = {
   [T.BONUS]: [A.BONUS, A.BONUS],
   [T.BEDROCK]: [A.BEDROCK, A.BEDROCK],
   [T.BRICK]: [A.BRICK, A.BRICK],
+  [T.PLATFORM]: [A.PLATFORM, A.PLATFORM],
 };
 
 const hex = (c) => {
@@ -126,6 +128,14 @@ const DRAW = {
     if (glyph === 2) { for (let x = 4; x < 12; x++) { p.px(x, 10, c); p.px(x, 5 + Math.abs(x - 8), c); } }
   },
   [A.CACTUS]: (p) => { p.fill('#3f9a4a'); for (let x = 1; x < 16; x += 4) for (let y = 0; y < 16; y++) p.px(x, y, '#2c7537'); for (let i = 0; i < 12; i++) p.px(p.rng.int(0, 15), p.rng.int(0, 15), '#e8f0c0'); },
+  [A.PLATFORM]: (p) => {
+    // assi rinforzate con fasce e chiodi di metallo: segnala che non si rompono
+    p.fill('#9a6a36');
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) if (y % 4 === 3) p.px(x, y, '#6a4520');
+    for (let y = 0; y < 16; y++) { p.px(2, y, '#7d8590'); p.px(3, y, '#5b626b'); p.px(12, y, '#7d8590'); p.px(13, y, '#5b626b'); }
+    for (const y of [1, 5, 9, 13]) { p.px(2, y, '#d8dee6'); p.px(12, y, '#d8dee6'); }
+    p.border('#9a6a36', 0.6);
+  },
   [A.ORE_WALL]: (p) => {
     p.fill('#4c4039'); p.speckle('#4c4039', 90, 0.65, 1.3);
     const c = p.rng.pick(['#5fd4ff', '#ff6fb1', '#ffd34d']);

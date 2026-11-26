@@ -94,7 +94,7 @@ export const SEGMENTS = {
       for (let i = 0; i < pw; i++) {
         const x = ctx.x++;
         writeColumn(ctx, x, { pit: true, lava, ground: base, ceilBase: Math.max(base, ph) });
-        ctx.grid.set(x, ph - 1, ctx.mat.platform);
+        ctx.grid.set(x, ph - 1, T.PLATFORM);
         ctx.colGround[x] = ph;
       }
     }
@@ -155,7 +155,9 @@ export const SEGMENTS = {
     const x0 = ctx.x;
     flatRun(ctx, n);
     const count = ctx.recipe.id >= 7 ? ctx.rng.int(2, 3) : ctx.rng.int(1, 2);
-    for (let i = 0; i < count; i++) ctx.addEnemy(x0 + 2 + i * 2.5, ctx.groundY);
+    // distribuiti dentro il segmento (mai nel segmento successivo)
+    const step = count > 1 ? (n - 3) / (count - 1) : 0;
+    for (let i = 0; i < count; i++) ctx.addEnemy(Math.floor(x0 + 1.5 + i * step) + 0.5, ctx.groundY);
   },
   bonusNiche(ctx) {
     const x0 = ctx.x;

@@ -2,7 +2,7 @@
 export const T = Object.freeze({
   AIR: 0, GRASS: 1, DIRT: 2, SAND: 3, SANDSTONE: 4, STONE: 5, DARKSTONE: 6,
   WOOD: 7, LEAVES: 8, CRATE: 9, BONUS: 10, BEDROCK: 11, LAVA: 12, SPIKES: 13,
-  SPIKES_RETRACT: 14, EXIT: 15, BRICK: 16,
+  SPIKES_RETRACT: 14, EXIT: 15, BRICK: 16, PLATFORM: 17,
 });
 
 const def = (name, o = {}) => ({
@@ -27,4 +27,6 @@ TILE_INFO[T.SPIKES] = def('spikes', { hazard: 'spikes' });
 TILE_INFO[T.SPIKES_RETRACT] = def('spikes_retract', { hazard: 'spikes' });
 TILE_INFO[T.EXIT] = def('exit');
 TILE_INFO[T.BRICK] = def('brick', { solid: true, breakable: true, hp: 2 });
+// piattaforme sospese: indistruttibili, altrimenti il percorso potrebbe diventare impossibile
+TILE_INFO[T.PLATFORM] = def('platform', { solid: true });
 Object.freeze(TILE_INFO);

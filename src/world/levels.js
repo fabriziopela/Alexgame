@@ -41,7 +41,7 @@ export const LEVELS = [
   },
   {
     ...base, id: 6, hint: 'Gli zombie della miniera profonda resistono a due colpi.', name: 'Miniera Profonda', theme: 'deepmine', indoor: true, seed: 6606,
-    length: 351, maxGap: 3, enemyRate: 0.44, enemyMix: { zombie: 0.7, mummy: 0.3 }, enemySpeed: 2.15,
+    length: 332, maxGap: 3, enemyRate: 0.44, enemyMix: { zombie: 0.7, mummy: 0.3 }, enemySpeed: 2.15,
     zombieHp: 2, bonusRate: 0.3, powerTable: { heart: 4, boomerang: 2, star: 1 },
     weights: { flat: 2, stepUp: 2, stepDown: 2, gap: 2, lavaGap: 3, spikeRow: 2, digWall: 3, lowTunnel: 2, enemyGroup: 2, bonusNiche: 2 },
   },
@@ -53,7 +53,7 @@ export const LEVELS = [
   },
   {
     ...base, id: 8, hint: 'Le mummie della tomba resistono a tre colpi. Usa il piccone-boomerang!', name: 'La Tomba Perduta', theme: 'tomb', indoor: true, seed: 8808,
-    length: 369, maxGap: 4, enemyRate: 0.52, enemyMix: { zombie: 0.2, mummy: 0.8 }, enemySpeed: 2.35,
+    length: 385, maxGap: 4, enemyRate: 0.52, enemyMix: { zombie: 0.2, mummy: 0.8 }, enemySpeed: 2.35,
     zombieHp: 2, mummyHp: 3, bonusRate: 0.32, powerTable: { heart: 4, boomerang: 3, star: 2 },
     weights: { flat: 2, stepUp: 2, stepDown: 2, gap: 2, lavaGap: 1, spikeRow: 3, retractSpikes: 3, digWall: 3, lowTunnel: 3, enemyGroup: 3, bonusNiche: 2 },
   },
